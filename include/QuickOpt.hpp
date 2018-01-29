@@ -16,21 +16,23 @@ namespace QuickOpt {
 
     using namespace std;
 
-    void splitString(const string &s, char delim, back_insert_iterator<deque<string>> result) {
-        stringstream ss(s);
-        string item;
-        while (getline(ss, item, delim)) {
-            *(result++) = item;
-        }
-    }
-
-    deque<string> split(const string &s, char delim = ',') {
-        deque<string> elems;
-        splitString(s, delim, back_inserter(elems));
-        return elems;
-    }
 
     class Argument {
+
+        void splitString(const string &s, char delim, back_insert_iterator<deque<string>> result) {
+            stringstream ss(s);
+            string item;
+            while (getline(ss, item, delim)) {
+                *(result++) = item;
+            }
+        }
+
+        deque<string> split(const string &s, char delim = ',') {
+            deque<string> elems;
+            splitString(s, delim, back_inserter(elems));
+            return elems;
+        }
+
         public:
             char shortName;
             string longName;
@@ -44,8 +46,7 @@ namespace QuickOpt {
             string type;
             string help;
 
-
-
+            // TODO: how can I template this properly?
             long as_long() { return std::stol(value); }
 
             double as_double() { return std::stod(value); }
@@ -141,23 +142,33 @@ namespace QuickOpt {
         }
 
         Argument& get(string name) {
-            return args[argNames[name]];
+            try {
+                int index = argNames.at(name);
+                return args[argNames.at(name)];
+            } catch (out_of_range& e) {
+                throw runtime_error("QuickOpt::Parser::get(): Unknown option '" + name + "'");
+            }
         }
 
         Argument& get(char name) {
-            return args[argChars[name]];
+            try {
+                int index = argChars.at(name);
+                return args[argChars.at(name)];
+            } catch (out_of_range& e) {
+                throw runtime_error("QuickOpt::Parser::get(): Unknown short option '" + string(1, name));
+            }
         }
 
         void printUsage(long width = 20) {
-            cout << "USAGE: " << progName << " [options]" << endl;
+            cout << "USAGE: " << progName << " [options]" << endl << endl;
             
             cout << setiosflags(ios::left) << setw(width) << "NAME" << setw(width) << "TYPE" 
                 << setw(width) << "DEFAULT" << "\t" << "DESCRIPTION" << endl;
 
             for(Argument& a : args) {
 
-                if(a.required) cout << setw(width) << string(1, a.shortName) + " " + a.longName;
-                else cout << setw(width) << "[" + string(1, a.shortName) + " " + a.longName + "]";
+                if(a.required) cout << setw(width) << "-" + string(1, a.shortName) + " --" + a.longName;
+                else cout << setw(width) << "[ -" + string(1, a.shortName) + " --" + a.longName + "]";
 
                 cout << setw(width) << a.type << setw(width) << a.defaultValue << "\t" << a.help << endl;
             }
@@ -172,6 +183,10 @@ namespace QuickOpt {
             do {
                 choice = getopt_long(argc, argv, optionSpec.c_str(), longOptions, NULL);
                 if(choice == -1) break;
+                if(choice == '?') {
+                    printUsage();
+                    exit(EXIT_FAILURE);
+                }
 
                 Argument& a = get(choice);
 
