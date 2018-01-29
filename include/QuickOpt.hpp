@@ -148,15 +148,18 @@ namespace QuickOpt {
             return args[argChars[name]];
         }
 
-        void printUsage() {
-            cout << "USAGE " << progName << ":" << endl;
-            printf("NAME\tTYPE\tDEFAULT\tDESCRIPTION");
+        void printUsage(long width = 20) {
+            cout << "USAGE: " << progName << " [options]" << endl;
+            
+            cout << setiosflags(ios::left) << setw(width) << "NAME" << setw(width) << "TYPE" 
+                << setw(width) << "DEFAULT" << "\t" << "DESCRIPTION" << endl;
+
             for(Argument& a : args) {
 
-                if(a.required) cout << a.shortName << " " << a.longName;
-                else cout << "[" << a.shortName << " " << a.longName << "]";
+                if(a.required) cout << setw(width) << string(1, a.shortName) + " " + a.longName;
+                else cout << setw(width) << "[" + string(1, a.shortName) + " " + a.longName + "]";
 
-                cout << a.type << "\t" << a.defaultValue << "\t" << a.help << endl;
+                cout << setw(width) << a.type << setw(width) << a.defaultValue << "\t" << a.help << endl;
             }
         }
 

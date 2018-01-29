@@ -9,7 +9,7 @@ int main(int argc, char *argv[])
 
     parser.add('k', "number",   required_argument, true,  "", "int",    "Number of things");
     parser.add('n', "vector",   required_argument, true,  "", "int[k]", "Count for each bin");
-    parser.add('H', "help",     no_argument,       false, "", "flag",   "Print this message and exit");
+    parser.add('H', "help",     no_argument,       false, "", "bool",   "Print this message and exit");
 
     parser.parse(argc, argv);
 
