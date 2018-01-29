@@ -56,7 +56,7 @@ See [src/example.cpp](src/example.cpp)
 
 ## TODO
 
-Proper templating of `as_*` function in `QuickOpts::Argument`
+Proper templating of `as_*` function in `QuickOpt::Argument`
 
 
 ```
