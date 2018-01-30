@@ -59,5 +59,3 @@ See [src/example.cpp](src/example.cpp)
 Proper templating of `as_*` function in `QuickOpt::Argument`
 
 
-```
-```
